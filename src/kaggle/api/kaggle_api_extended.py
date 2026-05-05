@@ -4626,7 +4626,7 @@ class KaggleApi:
         return owner_slug, kernel
 
     # Sentinel value emitted by the streaming endpoint to signal end-of-stream.
-    _LOG_STREAM_END_SENTINEL = "STREAM_END"
+    _LOG_STREAM_END_SENTINEL = "END_OF_LOG"
 
     def kernels_logs_stream(self, kernel: str) -> Iterator[Dict[str, str]]:
         """Stream live execution logs for a kernel via the midtier SSE proxy.
@@ -4635,7 +4635,7 @@ class KaggleApi:
         resolves the kernel's active session, waits for the upstream LogsURL to
         be published, and pipes the SSE feed back to us. Each event payload is
         a JSON object with `stream_name`, `time`, and `data` keys; the server
-        terminates the stream by emitting a `STREAM_END` sentinel.
+        terminates the stream by emitting an `END_OF_LOG` sentinel.
 
         Args:
             kernel: The kernel identifier in the format owner/kernel-slug.

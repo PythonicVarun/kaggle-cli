@@ -111,7 +111,7 @@ class TestKernelsLogs(unittest.TestCase):
         events = [
             {"stream_name": "stdout", "time": "t1", "data": "hello"},
             {"stream_name": "stderr", "time": "t2", "data": "warn"},
-            "STREAM_END",
+            "END_OF_LOG",
             # Anything after the sentinel must be ignored.
             {"stream_name": "stdout", "time": "t3", "data": "ignored"},
         ]
@@ -145,7 +145,7 @@ class TestKernelsLogs(unittest.TestCase):
     @patch.object(KaggleApi, "validate_kernel_string")
     def test_kernels_logs_stream_handles_non_json_payload(self, _validate, mock_client):
         response = MagicMock()
-        response.iter_lines.return_value = iter(["data: not-json", "", "data: STREAM_END", ""])
+        response.iter_lines.return_value = iter(["data: not-json", "", "data: END_OF_LOG", ""])
         response.raise_for_status = MagicMock()
 
         cm, _ = self._make_streaming_kaggle_client(response)
