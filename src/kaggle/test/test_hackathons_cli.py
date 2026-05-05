@@ -40,9 +40,7 @@ def api():
     a._build_hackathon_overview_request = MagicMock(side_effect=lambda c: _Req(c))
     a._build_list_hackathon_writeups_request = MagicMock(side_effect=lambda c: _Req(c))
     a._build_export_hackathon_writeups_csv_request = MagicMock(side_effect=lambda c: _Req(c))
-    a._build_get_resolved_writeup_links_request = MagicMock(
-        side_effect=lambda wid: _Req(write_up_id=wid)
-    )
+    a._build_get_resolved_writeup_links_request = MagicMock(side_effect=lambda wid: _Req(write_up_id=wid))
     return a
 
 
@@ -152,9 +150,7 @@ class TestHackathonsWriteupsList:
             _make_writeup(1, "Best Solution"),
             _make_writeup(2, "Runner Up", team_name="Team B"),
         ]
-        api._mock_competitions.list_hackathon_write_ups.return_value = _make_writeups_response(
-            writeups, total_count=2
-        )
+        api._mock_competitions.list_hackathon_write_ups.return_value = _make_writeups_response(writeups, total_count=2)
         api.hackathon_list_writeups_cli("hackathon-2026")
         out = capsys.readouterr().out
         assert "Best Solution" in out
@@ -206,18 +202,14 @@ class TestHackathonsWriteupsDownload:
         assert "Downloaded" in out
 
     def test_explicit_path(self, api, tmp_path):
-        api._mock_hackathon.export_hackathon_write_ups_csv.return_value = _make_csv_response(
-            "id\n1\n"
-        )
+        api._mock_hackathon.export_hackathon_write_ups_csv.return_value = _make_csv_response("id\n1\n")
         outfile = tmp_path / "out.csv"
         api.hackathon_download_writeups_cli("hackathon-2026", path=str(outfile), quiet=True)
         assert outfile.exists()
         assert outfile.read_text() == "id\n1\n"
 
     def test_directory_path_appends_default_name(self, api, tmp_path):
-        api._mock_hackathon.export_hackathon_write_ups_csv.return_value = _make_csv_response(
-            "id\n1\n"
-        )
+        api._mock_hackathon.export_hackathon_write_ups_csv.return_value = _make_csv_response("id\n1\n")
         api.hackathon_download_writeups_cli("hackathon-2026", path=str(tmp_path), quiet=True)
         assert (tmp_path / "hackathon-2026-writeups.csv").exists()
 
@@ -291,9 +283,7 @@ class TestCliArgParsing:
 
     def test_writeups_download_routes(self):
         parser = self._make_parser()
-        args = parser.parse_args(
-            ["hackathons", "writeups", "download", "titanic", "-p", "/tmp/out.csv"]
-        )
+        args = parser.parse_args(["hackathons", "writeups", "download", "titanic", "-p", "/tmp/out.csv"])
         assert args.competition == "titanic"
         assert args.path == "/tmp/out.csv"
 

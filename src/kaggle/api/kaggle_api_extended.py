@@ -2661,8 +2661,7 @@ class KaggleApi:
         method = getattr(client, method_name, None)
         if method is None:
             raise ValueError(
-                f"This command requires a newer kagglesdk that exposes "
-                f"`{hint}`. Please upgrade kagglesdk."
+                f"This command requires a newer kagglesdk that exposes " f"`{hint}`. Please upgrade kagglesdk."
             )
         return method
 
@@ -2672,9 +2671,7 @@ class KaggleApi:
                 ApiGetHackathonOverviewRequest,
             )
         except ImportError as exc:
-            raise ValueError(
-                "kagglesdk is missing ApiGetHackathonOverviewRequest; please upgrade kagglesdk."
-            ) from exc
+            raise ValueError("kagglesdk is missing ApiGetHackathonOverviewRequest; please upgrade kagglesdk.") from exc
         request = ApiGetHackathonOverviewRequest()
         request.competition_name = competition
         return request
@@ -2685,9 +2682,7 @@ class KaggleApi:
                 ApiListHackathonWriteUpsRequest,
             )
         except ImportError as exc:
-            raise ValueError(
-                "kagglesdk is missing ApiListHackathonWriteUpsRequest; please upgrade kagglesdk."
-            ) from exc
+            raise ValueError("kagglesdk is missing ApiListHackathonWriteUpsRequest; please upgrade kagglesdk.") from exc
         request = ApiListHackathonWriteUpsRequest()
         request.competition_name = competition
         return request
@@ -2711,9 +2706,7 @@ class KaggleApi:
                 GetResolvedWriteUpLinksRequest,
             )
         except ImportError as exc:
-            raise ValueError(
-                "kagglesdk is missing GetResolvedWriteUpLinksRequest; please upgrade kagglesdk."
-            ) from exc
+            raise ValueError("kagglesdk is missing GetResolvedWriteUpLinksRequest; please upgrade kagglesdk.") from exc
         request = GetResolvedWriteUpLinksRequest()
         request.write_up_id = write_up_id
         return request
@@ -2813,9 +2806,7 @@ class KaggleApi:
         flat.template = getattr(w, "template", False)
         return flat
 
-    def hackathon_download_writeups(
-        self, competition: str, path: Optional[str] = None, quiet: bool = False
-    ) -> str:
+    def hackathon_download_writeups(self, competition: str, path: Optional[str] = None, quiet: bool = False) -> str:
         """Download the CSV of hackathon write-ups for a competition.
 
         Mirrors the ``download_hackathon_write_ups`` MCP tool. Writes the CSV
@@ -2865,9 +2856,7 @@ class KaggleApi:
             print(f"Downloaded hackathon write-ups CSV to {outfile}")
         return outfile
 
-    def hackathon_download_writeups_cli(
-        self, competition=None, path=None, quiet=False
-    ):
+    def hackathon_download_writeups_cli(self, competition=None, path=None, quiet=False):
         """CLI wrapper for ``kaggle hackathons writeups download <competition>``."""
         if competition is None:
             raise ValueError("No competition specified")
@@ -2886,9 +2875,7 @@ class KaggleApi:
                 kaggle.discussions, "write_ups_client", None
             )
             if client is None:
-                raise ValueError(
-                    "kagglesdk is missing the WriteUpsClient; please upgrade kagglesdk."
-                )
+                raise ValueError("kagglesdk is missing the WriteUpsClient; please upgrade kagglesdk.")
             method = self._require_sdk_method(
                 client,
                 "get_resolved_writeup_links",
@@ -2905,11 +2892,7 @@ class KaggleApi:
         except (TypeError, ValueError):
             raise ValueError(f"writeup_id must be an integer (got {writeup_id!r})")
         response = self.hackathon_resolve_writeup_links(wid)
-        links = (
-            getattr(response, "resolved_links", None)
-            or getattr(response, "links", None)
-            or []
-        )
+        links = getattr(response, "resolved_links", None) or getattr(response, "links", None) or []
         if not links:
             print("No links found")
             return

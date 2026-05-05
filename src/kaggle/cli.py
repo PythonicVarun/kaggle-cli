@@ -1628,9 +1628,7 @@ def parse_hackathons(subparsers) -> None:
     parser_get_optional = parser_get._action_groups.pop()
     parser_get_required = parser_get.add_argument_group("required arguments")
     parser_get_required.add_argument("competition", help=Help.param_competition_nonempty)
-    parser_get_optional.add_argument(
-        "-v", "--csv", dest="csv_display", action="store_true", help=Help.param_csv
-    )
+    parser_get_optional.add_argument("-v", "--csv", dest="csv_display", action="store_true", help=Help.param_csv)
     parser_get_optional.add_argument("-q", "--quiet", dest="quiet", action="store_true", help=Help.param_quiet)
     parser_get._action_groups.append(parser_get_optional)
     parser_get.set_defaults(func=api.hackathon_get_overview_cli)
@@ -1689,9 +1687,7 @@ def parse_hackathons(subparsers) -> None:
     )
     parser_writeups_resolve_optional = parser_writeups_resolve._action_groups.pop()
     parser_writeups_resolve_required = parser_writeups_resolve.add_argument_group("required arguments")
-    parser_writeups_resolve_required.add_argument(
-        "writeup_id", help=Help.param_hackathons_writeup_id
-    )
+    parser_writeups_resolve_required.add_argument("writeup_id", help=Help.param_hackathons_writeup_id)
     parser_writeups_resolve_optional.add_argument(
         "-v", "--csv", dest="csv_display", action="store_true", help=Help.param_csv
     )

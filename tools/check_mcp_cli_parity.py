@@ -31,9 +31,7 @@ from typing import Dict, Iterable, List, Set, Tuple
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_MAPPING = REPO_ROOT / "tools" / "mcp_cli_mapping.yaml"
 DEFAULT_LOCAL_MCP = REPO_ROOT.parent / "kaggleazure" / "Kaggle.Sdk" / "mcp" / "McpClient.cs"
-DEFAULT_REMOTE_MCP = (
-    "https://raw.githubusercontent.com/Kaggle/kaggleazure/ci/Kaggle.Sdk/mcp/McpClient.cs"
-)
+DEFAULT_REMOTE_MCP = "https://raw.githubusercontent.com/Kaggle/kaggleazure/ci/Kaggle.Sdk/mcp/McpClient.cs"
 
 MCP_TOOL_PATTERN = re.compile(r'McpServerTool\(Name\s*=\s*"([^"]+)"')
 
@@ -68,9 +66,7 @@ def fetch_mcp_client_source(local_path: str | None, url: str | None) -> str:
             raise SystemExit(f"Failed to fetch McpClient.cs from {url}: HTTP {exc.code}{hint}")
         except urllib.error.URLError as exc:
             raise SystemExit(f"Failed to fetch McpClient.cs from {url}: {exc}")
-    raise SystemExit(
-        "No McpClient.cs source available. Pass --mcp-client <path> or --mcp-client-url <url>."
-    )
+    raise SystemExit("No McpClient.cs source available. Pass --mcp-client <path> or --mcp-client-url <url>.")
 
 
 def extract_mcp_tools(source: str) -> List[str]:
@@ -248,8 +244,7 @@ def render_report(
         lines.append("")
         lines.append("## Stale mapping entries")
         lines.append("")
-        lines.append("These mapping keys do not correspond to any MCP tool — "
-                     "remove or update them:")
+        lines.append("These mapping keys do not correspond to any MCP tool — " "remove or update them:")
         for key in stale:
             lines.append(f"- `{key}` → `{mapping[key]}`")
     return "\n".join(lines) + "\n"
@@ -270,8 +265,7 @@ def main(argv: List[str] | None = None) -> int:
     parser.add_argument(
         "--mcp-client-url",
         default=DEFAULT_REMOTE_MCP,
-        help=f"Raw URL of McpClient.cs to fetch when local copy is absent "
-        f"(default: {DEFAULT_REMOTE_MCP})",
+        help=f"Raw URL of McpClient.cs to fetch when local copy is absent " f"(default: {DEFAULT_REMOTE_MCP})",
     )
     parser.add_argument(
         "--mapping",
