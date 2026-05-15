@@ -1,6 +1,25 @@
+---
+name: kaggle-benchmarks
+description: >
+  How to write, push, run, and manage Kaggle Benchmark tasks using the kaggle
+  CLI and the kaggle-benchmarks Python SDK. Activate this skill when the user
+  wants to create a benchmark task, push a task file, run benchmarks against
+  LLM models, check run status, download results, or troubleshoot benchmark
+  workflows. Keywords: kaggle benchmarks, benchmark task, kbench, model proxy,
+  push task, run task, benchmark status, benchmark download.
+metadata:
+  author: kaggle
+  version: "0.1"
+---
+
 # Kaggle Benchmarks CLI Reference
 
 This reference covers how to use the `kaggle` CLI to manage Kaggle Benchmark tasks — pushing task files, running them against LLM models, checking status, and downloading results.
+
+## Official resources
+
+- **kaggle-benchmarks SDK repo:** https://github.com/Kaggle/kaggle-benchmarks — full source, API reference, and examples for the `kaggle-benchmarks` Python library used to write task files
+- **DeepWiki documentation:** https://deepwiki.com/Kaggle/kaggle-benchmarks — auto-generated documentation for the SDK
 
 ## Prerequisites
 
