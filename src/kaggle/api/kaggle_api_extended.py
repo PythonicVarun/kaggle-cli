@@ -972,12 +972,18 @@ class KaggleApi:
 
     ## Authentication
 
+    def _load_config(self) -> None:
+        """Load configuration from file and environment variables."""
+        config_values = self.read_config_file(quiet=True)
+        self.config_values = self.read_config_environment(config_values)
+
     def authenticate(self) -> None:
         """Authenticate the user with the Kaggle API, using either a legacy API key or a Kaggle OAuth token.
 
         Returns:
             None:
         """
+        self._load_config()
         if self._authenticate_with_access_token():
             return
         if self._authenticate_with_legacy_apikey():
@@ -997,36 +1003,20 @@ class KaggleApi:
         Returns:
             bool: True if auth succeeded.
         """
-
-        config_values: Dict[str, str] = {}
-
         # Ex: 'datasets list', 'competitions files', 'models instances get', etc.
         api_command = " ".join(sys.argv[1:])
 
-        # Step 1: try getting username/password from environment
-        config_values = self.read_config_environment(config_values)
+        if self.CONFIG_NAME_USER in self.config_values and self.CONFIG_NAME_KEY in self.config_values:
+            self.config_values[self.CONFIG_NAME_AUTH_METHOD] = str(AuthMethod.LEGACY_API_KEY)
+            self.logger.debug(f"Authenticated with legacy api key in: {self.config}")
+            return True
 
-        # Step 2: if credentials were not in env read in configuration file
-        if self.CONFIG_NAME_USER not in config_values or self.CONFIG_NAME_KEY not in config_values:
-            if os.path.exists(self.config):
-                config_values = self.read_config_file(config_values, quiet=True)
-            elif self._command_allows_logged_out(api_command):
-                config_values = self.read_config_file(config_values, quiet=True)
-                return True
-            else:
-                return False
+        if self._command_allows_logged_out(api_command):
+            return True
 
-        # Step 3: Validate and save
-        # Username and password are required.
-        for item in [self.CONFIG_NAME_USER, self.CONFIG_NAME_KEY]:
-            if item not in config_values:
-                raise ValueError("Error: Missing %s in configuration." % item)
-        self.config_values = config_values
-        self.config_values[self.CONFIG_NAME_AUTH_METHOD] = str(AuthMethod.LEGACY_API_KEY)
-        self.logger.debug(f"Authenticated with legacy api key in: {self.config}")
-        return True
+        return False
 
-    def _authenticate_with_access_token(self):
+    def _authenticate_with_access_token(self) -> bool:
         access_token, source = get_access_token_from_env()
         if not access_token:
             return False
@@ -1036,11 +1026,9 @@ class KaggleApi:
             self.logger.debug(f'Ignoring invalid/expired access token in "{source}".')
             return False
 
-        self.config_values: Dict[str, str] = {
-            self.CONFIG_NAME_TOKEN: access_token,
-            self.CONFIG_NAME_USER: username,
-            self.CONFIG_NAME_AUTH_METHOD: str(AuthMethod.ACCESS_TOKEN),
-        }
+        self.config_values[self.CONFIG_NAME_TOKEN] = access_token
+        self.config_values[self.CONFIG_NAME_USER] = username
+        self.config_values[self.CONFIG_NAME_AUTH_METHOD] = str(AuthMethod.ACCESS_TOKEN)
         self.logger.debug(f"Authenticated with access token in: {source}")
         return True
 
@@ -1057,11 +1045,9 @@ class KaggleApi:
                     creds.delete()
                     return False
                 raise
-            self.config_values: Dict[str, str] = {
-                self.CONFIG_NAME_TOKEN: access_token,
-                self.CONFIG_NAME_USER: creds.get_username(),
-                self.CONFIG_NAME_AUTH_METHOD: str(AuthMethod.OAUTH),
-            }
+            self.config_values[self.CONFIG_NAME_TOKEN] = access_token
+            self.config_values[self.CONFIG_NAME_USER] = creds.get_username()
+            self.config_values[self.CONFIG_NAME_AUTH_METHOD] = str(AuthMethod.OAUTH)
             creds_path = os.path.expanduser(KaggleCredentials.DEFAULT_CREDENTIALS_FILE)
             self.logger.debug(f"Authenticated with OAuth credentials in: {creds_path}")
             return True
