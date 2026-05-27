@@ -32,8 +32,26 @@ from kaggle.api.kaggle_api_extended import print_auth_help
 ApiException = IOError
 
 
+class _KaggleArgumentParser(argparse.ArgumentParser):
+    """ArgumentParser with friendlier error formatting for missing required args.
+
+    Rewrites argparse's default ``error: the following arguments are required: X``
+    into ``Error: Missing required argument 'X'.`` plus the usage line.
+    """
+
+    def error(self, message: str) -> None:  # type: ignore[override]
+        prefix = "the following arguments are required: "
+        if message.startswith(prefix):
+            required = message[len(prefix) :].strip()
+            args_quoted = ", ".join(f"'{a.strip()}'" for a in required.split(","))
+            label = "argument" if "," not in required else "arguments"
+            self.print_usage(sys.stderr)
+            self.exit(2, f"Error: Missing required {label} {args_quoted}.\n")
+        super().error(message)
+
+
 def main() -> None:
-    parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
+    parser = _KaggleArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
 
     parser.add_argument(
         "-v",
@@ -78,7 +96,12 @@ def main() -> None:
         if e.response is not None and e.response.status_code == 401:
             print_auth_help()
         else:
-            print(e, file=sys.stderr)
+            print(
+                "An unexpected server error occurred. "
+                "If the problem persists, check https://www.kaggle.com/status or try again later.",
+                file=sys.stderr,
+            )
+            print(f"Details: {e}", file=sys.stderr)
         out = None
         error = True
     except ApiException as e:

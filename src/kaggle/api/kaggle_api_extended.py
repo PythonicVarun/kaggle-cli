@@ -940,6 +940,19 @@ class KaggleApi:
                     return func(*args)
                 except Exception as e:
                     if type(e) is HTTPError:
+                        if self._is_retriable(e) and i >= max_retries:
+                            if self._is_rate_limited(e):
+                                print(
+                                    f"Rate limit exceeded after {max_retries} retries. "
+                                    "Try again in a few minutes.",
+                                    file=sys.stderr,
+                                )
+                            else:
+                                print(
+                                    f"Request failed after {max_retries} retries. "
+                                    "If the problem persists, check https://www.kaggle.com/status or try again later.",
+                                    file=sys.stderr,
+                                )
                         if self._is_retriable(e) and i < max_retries:
                             # Use Retry-After header for 429 responses when available
                             if self._is_rate_limited(e):
